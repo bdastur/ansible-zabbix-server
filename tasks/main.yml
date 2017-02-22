@@ -10,6 +10,10 @@
   tags:
     - always
 
+- name: "Display short version"
+  debug:
+    msg: "Zabbix short version: {{ zabbix_short_version }}"
+
 - name: "Get Apache version"
   action: shell apachectl -v | grep 'version' | awk -F '/' '{ print $2 }'| awk '{ print $1 }' | cut -c 1-3
   changed_when: apachectl_version.rc == 7
@@ -46,7 +50,13 @@
 
 - name: "Installing the mysql database"
   include: "mysql.yml"
-  when: database_type_long == "mysql"
+  when: (database_type_long == "mysql") and (dbtype is not defined or dbtype == "mysql")
+  tags:
+    - always
+
+- name: "Install mysql database (aws-rds)"
+  include: "mysql_rds.yml"
+  when: (database_type_long == "mysql") and (dbtype is defined and dbtype == "aws-rds")
   tags:
     - always
 

@@ -1,0 +1,69 @@
+---
+# task file for mysql
+
+- name: Create MySQL database
+  mysql_db:                                                                                                                                                                                     
+      name: "{{ server_dbname }}"
+      state: present
+      login_host: "{{ server_dbhost }}"
+      login_user: root
+      login_password: "{{ server_db_root_password }}"
+  run_once: true
+  delegate_to: localhost
+  tags:
+    - zabbix-server
+    - database
+  when: (dbtype == "aws-rds")
+
+- name: Grant MySQL user
+  mysql_user:
+    name: "{{ server_dbuser }}" 
+    login_host: "{{ server_dbhost }}"
+    login_user: root
+    login_password: "{{ server_db_root_password }}"
+    password: "{{ server_dbpassword }}"
+    priv: "{{ server_dbname }}.*:ALL"
+    state: present
+    host: "%"
+  run_once: true
+  delegate_to: localhost
+  tags:
+    - database
+  when: (dbtype == "aws-rds")
+
+- name: "MySQL | Importing schema file: 1 {{ zabbix_short_version }}"
+  shell: "cd {{ datafiles_path }} && if [ -f create.sql.gz ]; then gunzip create.sql.gz ; fi && mysql -h '{{ server_dbhost }}' -u '{{ server_dbuser }}' -p'{{ server_dbpassword }}' -D '{{ server_dbname }}' < schema.sql && touch /etc/zabbix/schema.done"
+  args:
+    creates: /etc/zabbix/schema.done
+  when: zabbix_short_version|int >= 30 and zabbix_database_sqlload
+  tags:
+    - zabbix-server
+    - database
+
+- name: "MySQL | Importing schema file: 2 {{ zabbix_short_version }}"
+  shell: "cd {{ datafiles_path }} && if [ -f schema.sql.gz ]; then gunzip schema.sql.gz ; fi && mysql -h '{{ server_dbhost }}' -u '{{ server_dbuser }}' -p'{{ server_dbpassword }}' -D '{{ server_dbname }}' < schema.sql && touch /etc/zabbix/schema.done"
+  args:
+    creates: /etc/zabbix/schema.done
+  when: (zabbix_short_version|int < 30 and zabbix_database_sqlload)
+  tags:
+    - zabbix-server
+    - database
+
+- name: "MySQL | Importing images file: 3 {{ zabbix_short_version }}"
+  shell: "cd {{ datafiles_path }} && if [ -f images.sql.gz ]; then gunzip images.sql.gz ; fi && mysql -h '{{ server_dbhost }}' -u '{{ server_dbuser }}' -p'{{ server_dbpassword }}' -D '{{ server_dbname }}' < images.sql && touch /etc/zabbix/images.done"
+  args:
+    creates: /etc/zabbix/images.done
+  when: (zabbix_short_version|int < 30 and zabbix_database_sqlload) or (zabbix_repo == "epel" and zabbix_database_sqlload)
+  tags:
+    - zabbix-server
+    - database
+
+- name: "MySQL | Importing data file: 4 {{ zabbix_short_version }}"
+  shell: "cd {{ datafiles_path }} && if [ -f data.sql.gz ]; then gunzip data.sql.gz ; fi && mysql -h '{{ server_dbhost }}'  -u '{{ server_dbuser }}' -p'{{ server_dbpassword }}' -D '{{ server_dbname }}' < data.sql && touch /etc/zabbix/data.done"
+  args:
+    creates: /etc/zabbix/data.done
+  when: (zabbix_short_version|int < 30 and zabbix_database_sqlload) or (zabbix_repo == "epel" and zabbix_database_sqlload)
+  tags:
+    - zabbix-server
+    - database
+
