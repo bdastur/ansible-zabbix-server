@@ -165,6 +165,40 @@ Including an example of how to use your role (for instance, with variables passe
          - { role: geerlingguy.apache }
          - { role: dj-wasabi.zabbix-server, zabbix_url: zabbix.dj-wasabi.nl, database_type: mysql, database_type_long: mysql }
 
+Second Example:
+```
+    - name: Install Zabbix Server.
+      hosts: zabbix-server
+      become: yes
+      vars:
+        php_memory_limit: "128M"
+        php_max_execution_time: "90"
+        php_upload_max_filesize: "256M"
+        php_packages:
+          - php
+          - php-cli
+          - php-common
+          - php-devel
+          - php-gd
+          - php-mbstring
+          - php-pdo
+          - php-pecl-apcu
+          - php-xml
+      roles:
+        - role: geerlingguy.apache
+        - role: dj-wasabi.zabbix-server
+          database_type: mysql
+          database_type_long: mysql
+          server_dbname: "{{zabbix_dbname}}"
+          server_dbport: 3306
+          server_dbuser: "{{zabbix_dbuser}}"
+          server_dbpassword: "{{zabbix_dbpass}}"
+          zabbix_version: 2.4
+          zabbix_url: "{{ inventory_hostname }}"
+          datafiles_path: "/usr/share/doc/zabbix-server-mysql-2.4.8/create"
+
+```
+    
 
 # Test Kitchen
 
