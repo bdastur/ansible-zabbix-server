@@ -256,7 +256,7 @@ StartDBSyncers={{ server_startdbsyncers }}
 #
 HistoryCacheSize={{ server_historycachesize }}
 
-{% if zabbix_short_version >= 30 %}
+{% if zabbix_short_version|int >= 30 %}
 ### Option: HistoryIndexCacheSize
 #       Size of history index cache, in bytes.
 #       Shared memory size for indexing history cache.

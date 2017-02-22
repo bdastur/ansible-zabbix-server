@@ -13,6 +13,8 @@ zabbix_web: true
 zabbix_database_creation: True
 zabbix_database_sqlload: True
 
+ubuntu_packages: True
+
 # Database
 database_type: pgsql
 database_type_long: postgresql
