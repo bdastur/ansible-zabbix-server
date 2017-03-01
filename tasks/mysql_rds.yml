@@ -8,6 +8,7 @@
       login_host: "{{ server_dbhost }}"
       login_user: root
       login_password: "{{ server_db_root_password }}"
+  become: no
   run_once: true
   delegate_to: localhost
   tags:
@@ -25,6 +26,7 @@
     priv: "{{ server_dbname }}.*:ALL"
     state: present
     host: "%"
+  become: no
   run_once: true
   delegate_to: localhost
   tags:
