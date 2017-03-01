@@ -24,9 +24,9 @@ Build Status:
 
 [![Build Status](https://travis-ci.org/dj-wasabi/ansible-zabbix-server.svg?branch=master)](https://travis-ci.org/dj-wasabi/ansible-zabbix-server)
 
-This is an role for installing and maintaining the zabbix-server.
+This is a role for installing and maintaining the zabbix-server.
 
-This is one of the 'dj-wasabi' roles which configures your whole zabbix environment. See an list for the complete list:
+This is one of the 'dj-wasabi' roles which configures your whole zabbix environment. See below for the complete list:
 
  * zabbix-server (https://galaxy.ansible.com/dj-wasabi/zabbix-server/)
  * zabbix-proxy (https://galaxy.ansible.com/dj-wasabi/zabbix-proxy/)
